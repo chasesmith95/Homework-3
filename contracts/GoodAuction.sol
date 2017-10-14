@@ -14,12 +14,29 @@ contract GoodAuction is AuctionInterface {
 	 * retrieve their funds
 	 */
 	function bid() payable external returns(bool) {
-		// YOUR CODE HERE
+		if (msg.value <= highestBid) {
+			refunds[msg.sender] = msg.value;
+			return false;
+		}
+
+		if (highestBid != 0) {
+				refunds[highestBidder] = highestBid;
+		 }
+
+		 highestBidder = msg.sender;
+		 highestBid = msg.value;
+		 return true;
+
 	}
 
 	/* New withdraw function, shifts to push paradigm */
 	function withdrawRefund() external returns(bool) {
-		// YOUR CODE HERE
+		uint balance = refunds[msg.sender];
+		refunds[msg.sender] = 0;
+		if (balance != 0) {
+			return msg.sender.send(balance);
+		}
+		return false;
 	}
 
 	/* Allow users to check the amount they can withdraw */
@@ -29,6 +46,6 @@ contract GoodAuction is AuctionInterface {
 
 	/* Give people their funds back */
 	function () payable {
-		// YOUR CODE HERE
+		revert();
 	}
 }
